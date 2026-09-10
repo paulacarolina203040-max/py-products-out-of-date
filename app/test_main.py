@@ -9,7 +9,7 @@ def test_outdated_products(monkeypatch) -> None:
         def today(cls) -> datetime.date:
             return cls(2022, 2, 2)
 
-    monkeypatch.setattr("app.main.datetime.date", MockDate)
+    monkeypatch.setattr("app.main.date", MockDate)
 
     products = [
         {
