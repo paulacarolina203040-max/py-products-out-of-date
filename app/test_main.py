@@ -1,30 +1,28 @@
 import datetime
-from unittest.mock import patch
 
 from app.main import outdated_products
 
 
-@patch("app.main.datetime.date")
-def test_outdated_products(mock_date: object) -> None:
-    mock_date.today.return_value = datetime.date(2022, 2, 2)
+def test_outdated_products(monkeypatch) -> None:
+    class MockDate(datetime.date):
+        @classmethod
+        def today(cls) -> datetime.date:
+            return cls(2022, 2, 2)
+
+    monkeypatch.setattr("app.main.datetime.date", MockDate)
 
     products = [
         {
             "name": "salmon",
-            "expiration_date": datetime.date(2022, 2, 10),
+            "expiration_date": datetime.date(2022, 2, 2),
             "price": 600,
         },
         {
             "name": "chicken",
-            "expiration_date": datetime.date(2022, 2, 5),
-            "price": 120,
-        },
-        {
-            "name": "duck",
             "expiration_date": datetime.date(2022, 2, 1),
-            "price": 160,
+            "price": 120,
         },
     ]
 
     result = outdated_products(products)
-    assert result == ["duck"]
+    assert result == ["chicken"]
